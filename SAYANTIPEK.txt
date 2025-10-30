@@ -29,6 +29,14 @@ def clear():
 def delete_one():
     entry.delete(len(entry.get()) - 1, tk.END)
 
+def plus_minus():
+    val = entry.get()
+    if val:
+        if val.startswith("-"):
+            entry.delete(0, 1)
+        else:
+            entry.insert(0, "-")
+
 def format_number(num):
     if isinstance(num, int) or (isinstance(num, float) and num.is_integer()):
         return "{:,}".format(int(num))
@@ -38,11 +46,33 @@ def format_number(num):
 def calc():
     try:
         expr = entry.get()
-        expr = expr.replace("×", "*").replace("÷", "/")
+        expr = expr.replace("×", "*").replace("÷", "/").replace("^", "**").replace("π", str(math.pi))
         
         #temporary code/value A-D
         
         a, b, c, d = 2, 4, 6, 8
+
+
+        if expr.startswith("FLR"):
+            num = float(expr[3:])
+            result = math.floor(num)
+            entry.delete(0, tk.END)
+            entry.insert(0, format_number(result))
+            return
+
+        elif expr.startswith("CEIL"):
+            num = float(expr[4:])
+            result = math.ceil(num)
+            entry.delete(0, tk.END)
+            entry.insert(0, format_number(result))
+            return
+
+        elif expr.startswith("INT"):
+            num = float(expr[3:])
+            result = int(num)
+            entry.delete(0, tk.END)
+            entry.insert(0, format_number(result))
+            return
 
         functions = {
             "√": lambda x: math.sqrt(float(x)),
@@ -105,12 +135,16 @@ for row in buttons:
             cmd = calc
         elif b == 'CLEAR':
             cmd = clear
+        elif b == '+/-':
+            cmd = plus_minus
         elif b == 'DEL':
             cmd = delete_one
         elif b == 'x!':
             cmd = lambda: click("!")
         elif b == '√':
             cmd = lambda: click("√")
+        elif b == '//':
+            cmd = lambda: click("//")
         elif b == 'log₂ x':
             cmd = lambda: click("log₂(")
         elif b == 'log x':
@@ -127,3 +161,4 @@ for row in buttons:
         ).pack(side="left", expand=True, fill="both", padx=1, pady=1)
 
 root.mainloop()
+
